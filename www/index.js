@@ -38,6 +38,7 @@ function stopPosition() {
 	
 	//instruct location service to get position with appropriate callbacks
 	navigator.geolocation.clearWatch(watchID);
+    watchID = null;
 }
 
 
