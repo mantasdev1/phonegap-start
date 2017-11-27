@@ -1,70 +1,63 @@
 var watchID;
+var accelerometerOptions = { frequency: 2000 };  // Update every 2 seconds
+accelerometerOptions.frequency = 3000; //changed my mind - now 3 seconds
 
-var locationOptions = { 
-	maximumAge: 10000, 
-	timeout: 6000, 
-	enableHighAccuracy: true 
-};
 
-//when the jQuery Mobile page is initialised
-$(document).on('pageinit', function() {
+//when the page is created...
+$(document).on("pagecreate", "#page1", function () {
 	
-	//set up listener for button clicks
-	$('#startLocationButton').on('click', updatePosition);
-	$('#stopLocationButton').on('click', stopPosition);
+	//setup listener for the toggle switch
+	$("#flipswitch").on("change", function() {
+		
+		if( $(this).val() == "on" ) startSensor();
+		else if ( $(this).val() == "off" ) stopSensor();
+
+	});
 	
-	//change time box to show message
-	$('#time').val("Press the button to get location data");
+	//setup listener for the slider
+	$("#slider").on("slidestop", function() {
+		
+		
+		//the value from the slider is text - it needs to be turned into an integer
+		var freq = parseInt($(this).val());
+		
+		updateFreq(freq);
+	
+	});
 	
 });
 
 
-
-//Call this function when you want to watch for chnages in position
-function updatePosition() {
-	
-	//change time box to show updated message
-	$('#time').val("Getting data...");
-	
-	//instruct location service to get position with appropriate callbacks
-	watchID = navigator.geolocation.watchPosition(successPosition, failPosition, locationOptions);
-}
-
-//Call this function when you want to watch for chnages in position
-function stopPosition() {
-	
-	//change time box to show updated message
-	$('#time').val("Press the button to get location data");
-	
-	//instruct location service to get position with appropriate callbacks
-	navigator.geolocation.clearWatch(watchID);
-    watchID = null;
+function startSensor() {
+	watchID = navigator.accelerometer.watchAcceleration( accelerometerSuccess, accelerometerError, accelerometerOptions);
 }
 
 
-//called when the position is successfully determined
-function successPosition(position) {
-	
-	//You can find out more details about what the position obejct contains here:
-	// http://www.w3schools.com/html/html5_geolocation.asp
-	
-
-	//lets get some stuff out of the position object
-    var unixtime = new Date(position.timestamp);
-    var date = unixtime.toDateString();
-	var latitude = position.coords.latitude;
-	var longitude = position.coords.longitude;
-	
-	//OK. Now we want to update the display with the correct values
-	$('#time').val("Recieved data at " + date);
-	$('#lattext').val(latitude);
-	$('#longtext').val(longitude);
-	
+function stopSensor() {
+	navigator.accelerometer.clearWatch(watchID);
+			
+	$('#sensorX').val("");
+	$('#sensorY').val("");
+	$('#sensorZ').val("");
+	$('#timestamp').val("");
 }
 
-//called if the position is not obtained correctly
-function failPosition(error) {
-	//change time box to show updated message
-	$('#time').val("Error getting data: " + error);
+function accelerometerSuccess(acceleration) {
 	
+	$('#sensorX').val(acceleration.x);
+	$('#sensorY').val(acceleration.y);
+	$('#sensorZ').val(acceleration.z);
+	$('#timestamp').val(acceleration.timestamp);
+
 }
+
+function accelerometerError() {
+   alert('Error');
+}
+
+function updateFreq(freq) {
+	//do something to update freq. here.
+}
+
+
+
