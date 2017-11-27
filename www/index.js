@@ -57,9 +57,10 @@ function accelerometerError() {
 
 function updateFreq(freq) {
 	//do something to update freq. here.
-    stopSensor();
-    startSensor();
-}
+    if( $('#flipswitch').val() == "on" ) {
+        stopSensor();
+        startSensor();
+    }
 
 
 
