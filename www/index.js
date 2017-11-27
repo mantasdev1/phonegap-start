@@ -61,6 +61,7 @@ function updateFreq(freq) {
         stopSensor();
         startSensor();
     }
+}
 
 
 
